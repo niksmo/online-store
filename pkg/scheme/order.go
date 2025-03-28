@@ -3,9 +3,9 @@ package scheme
 import "time"
 
 type Order struct {
-	UserID     int32     `json:"userID"`
-	OrderID    int64     `json:"orderID"`
+	UserID     int       `json:"userID"`
+	OrderID    int       `json:"orderID"`
 	Items      []Product `json:"items"`
-	TotalPrice float32   `json:"totalPrice"`
+	TotalPrice float64   `json:"totalPrice"`
 	Date       time.Time `json:"date"`
 }
