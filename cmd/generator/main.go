@@ -8,12 +8,11 @@ import (
 	"os/signal"
 )
 
-const nWorkers = 8
-
 func main() {
 	stopCtx, stopFn := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stopFn()
 
+	FlagsInit()
 	logger.Init()
 
 	orderGenerator := generator.NewOrderGenerator(
@@ -21,7 +20,13 @@ func main() {
 	)
 
 	orderStream := orderGenerator.Run(stopCtx)
-	generator.OrderSendersPool(stopCtx, nWorkers, orderStream, "http://127.0.0.1:8000/")
+	generator.OrderSendersPool(stopCtx, WorkersFlagValue, orderStream, AddrFlagValue)
+
+	logger.Instance.Info().
+		Str("AddrFlagValue", AddrFlagValue).
+		Int("WorkersFlagValue", WorkersFlagValue).
+		Msg("Start order generator application")
 
 	<-stopCtx.Done()
+	logger.Instance.Info().Msg("Gracefully shutdown")
 }

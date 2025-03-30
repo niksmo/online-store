@@ -29,30 +29,30 @@ func sendOrderWorker(ctx context.Context, workerID int, orderStream <-chan schem
 		case <-ctx.Done():
 			return
 		case order := <-orderStream:
-			sendOrder(URL, order)
-
-			logger.Instance.Info().
-				Int("workerID", workerID).
-				Int("userID", order.UserID).
-				Int("orderID", order.OrderID).
-				Msg("Send order")
-
+			sendOrder(workerID, URL, order)
 			wait()
 		}
 	}
 }
 
-func sendOrder(URL string, order scheme.Order) {
+func sendOrder(workerID int, URL string, order scheme.Order) {
+	log := logger.Instance.With().
+		Int("workerID", workerID).
+		Int("userID", order.UserID).
+		Int("orderID", order.OrderID).
+		Logger()
+
 	statusCode, _, errs := fiber.Post(URL).JSON(order).Bytes()
+
 	if len(errs) != 0 {
-		logger.Instance.Error().
-			Caller().
-			Int("statusCode", statusCode).
-			Errs("errors", errs).Send()
+		log.Error().Caller().Errs("errors", errs).Send()
+		return
 	}
+
+	log.Info().Int("statusCode", statusCode).Msg("Send order")
 }
 
 func wait() {
-	interval := minSendInterval + rand.IntN((maxSendInterval+1)-minSendInterval)
+	interval := minSendInterval + rand.IntN(maxSendInterval-minSendInterval+1)
 	time.Sleep(time.Duration(interval) * time.Millisecond)
 }
