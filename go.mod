@@ -3,6 +3,7 @@ module niksmo/online-store
 go 1.24.1
 
 require (
+	github.com/gofiber/contrib/fiberzerolog v1.0.2
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/pflag v1.0.6
