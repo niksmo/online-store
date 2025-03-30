@@ -1,7 +1,7 @@
 name: practicum_kafka_module_1
 
 volumes:
-  kafka-0-data:
+  kafka-1-data:
 
 
 networks:
@@ -9,14 +9,14 @@ networks:
 
 
 services:
-  kafka-0:
+  kafka-1:
     image: bitnami/kafka:4.0.0
-    container_name: kafka-0
-    hostname: kafka-0
+    container_name: kafka-1
+    hostname: kafka-1
     ports:
       - "127.0.0.1:9094:9094"
     volumes:
-      - kafka-0-data:/bitnami/kafka
+      - kafka-1-data:/bitnami/kafka
     environment:
       - KAFKA_CLUSTER_ID=1
       - KAFKA_CFG_NODE_ID=1
@@ -24,9 +24,9 @@ services:
       - KAFKA_CFG_LISTENERS=BROKER://:9092,CONTROLLER://:9093,CLIENT://:9094
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=BROKER
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka-0:9093
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,CLIENT:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka-0:9092,CLIENT://127.0.0.1:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka-1:9092,CLIENT://127.0.0.1:9094
     networks:
       - kafka
 
