@@ -1,0 +1,9 @@
+1) docker compose -it kafka-1 bash
+
+2) kafka-topics.sh --bootstrap-server localhost:9092 --create --topic orders_create --partitions 3 --replication-factor 2
+
+3) kafka-topics.sh --describe --topic orders_create --bootstrap-server localhost:9092
+Topic: orders_create	TopicId: NETjHVfwRkS8QaHzX6yqFQ	PartitionCount: 3	ReplicationFactor: 2	Configs: segment.bytes=1073741824
+	Topic: orders_create	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Elr: 	LastKnownElr:
+	Topic: orders_create	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Elr: 	LastKnownElr:
+	Topic: orders_create	Partition: 2	Leader: 2	Replicas: 2,1	Isr: 2,1	Elr: 	LastKnownElr:
