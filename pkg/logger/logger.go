@@ -1,5 +1,14 @@
 package logger
 
-// var instance
+import (
+	"os"
 
-// set level func
+	"github.com/rs/zerolog"
+)
+
+var Instance zerolog.Logger
+
+func Init() {
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	Instance = zerolog.New(os.Stderr)
+}

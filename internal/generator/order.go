@@ -2,8 +2,6 @@ package generator
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"math"
 	"math/rand/v2"
 	"niksmo/online-store/pkg/counter"
@@ -20,34 +18,35 @@ const (
 )
 
 type OrderGenerator struct {
-	URL     string
 	store   di.ProductGetter
 	counter *counter.Counter
 }
 
-func NewOrderGenerator(URL string, store di.ProductGetter) *OrderGenerator {
+func NewOrderGenerator(store di.ProductGetter) *OrderGenerator {
 	return &OrderGenerator{
-		URL:     URL,
 		store:   store,
 		counter: counter.New(),
 	}
 }
 
-func (og *OrderGenerator) Run(ctx context.Context, nWorkers int) {
-	for workerID := range nWorkers {
-		go func(ctx context.Context, orderGenerator *OrderGenerator) {
-			for {
-				data, err := json.MarshalIndent(og.MakeOrder(), "", "  ")
-				if err != nil {
-					panic(err)
-				}
-				fmt.Println(
-					fmt.Sprintf("workerID=%d\n", workerID), string(data),
-				)
-				sleep := 100 + rand.IntN(1001-100)
-				time.Sleep(time.Duration(sleep) * time.Millisecond)
-			}
-		}(ctx, og)
+func (og *OrderGenerator) Run(ctx context.Context) <-chan scheme.Order {
+	orderStream := make(chan scheme.Order)
+	go og.sendOrderToStream(ctx, orderStream)
+	return orderStream
+}
+
+func (og *OrderGenerator) sendOrderToStream(
+	ctx context.Context, stream chan<- scheme.Order,
+) {
+	defer close(stream)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			stream <- og.MakeOrder()
+		}
 	}
 }
 

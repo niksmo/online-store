@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"niksmo/online-store/internal/generator"
+	"niksmo/online-store/pkg/logger"
 	"os"
 	"os/signal"
 )
@@ -13,12 +14,14 @@ func main() {
 	stopCtx, stopFn := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stopFn()
 
+	logger.Init()
+
 	orderGenerator := generator.NewOrderGenerator(
-		"URL",
 		generator.NewProductStore(),
 	)
 
-	orderGenerator.Run(stopCtx, nWorkers)
+	orderStream := orderGenerator.Run(stopCtx)
+	generator.OrderSendersPool(stopCtx, nWorkers, orderStream, "http://127.0.0.1:8000/")
 
 	<-stopCtx.Done()
 }
