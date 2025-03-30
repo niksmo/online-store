@@ -25,8 +25,8 @@ func main() {
 	logger.Instance.Info().
 		Str("AddrFlagValue", AddrFlagValue).
 		Int("WorkersFlagValue", WorkersFlagValue).
-		Msg("Start order generator application")
+		Msg("start order generator application")
 
 	<-stopCtx.Done()
-	logger.Instance.Info().Msg("Gracefully shutdown")
+	logger.Instance.Info().Msg("gracefully shutdown")
 }

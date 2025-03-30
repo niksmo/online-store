@@ -49,7 +49,7 @@ func sendOrder(workerID int, URL string, order scheme.Order) {
 		return
 	}
 
-	log.Info().Int("statusCode", statusCode).Msg("Send order")
+	log.Info().Int("statusCode", statusCode).Msg("send order")
 }
 
 func wait() {

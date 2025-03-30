@@ -23,13 +23,13 @@ func main() {
 	logger.Init()
 
 	app := fiber.New()
-	store.SetupAPIRouter(app)
+	store.SetupAPIRouter(stopCtx, app)
 
 	serverErrCh := httpserver.Bootstrap(app, AddrFlagValue)
 	go handleListenErr(serverErrCh)
 
 	<-stopCtx.Done()
-	logger.Instance.Info().Msg("Gracefully shutdown")
+	logger.Instance.Info().Msg("gracefully shutdown")
 
 	if err := httpserver.Close(app); err != nil {
 		logger.Instance.Error().Caller().Err(err).Msg("server shutdown")

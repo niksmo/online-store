@@ -26,11 +26,7 @@ func (h StoreHandler) PostOrder(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	err = h.service.CreateOrder(c.Context(), order)
-	if err != nil {
-		log.Error().Err(err).Send()
-		return fiber.ErrInternalServerError
-	}
+	h.service.CreateOrder(c.Context(), order)
 
 	return c.SendStatus(fiber.StatusCreated)
 }

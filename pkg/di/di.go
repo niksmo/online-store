@@ -10,5 +10,5 @@ type ProductGetter interface {
 }
 
 type OrderCreater interface {
-	CreateOrder(ctx context.Context, order scheme.Order) error
+	CreateOrder(ctx context.Context, order scheme.Order)
 }
