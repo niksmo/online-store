@@ -12,8 +12,8 @@ import (
 )
 
 // flags
-// kafka broker address
-// kafka topic
+// bootstrapServers
+// topic
 
 func main() {
 	stopCtx, stopFn := signal.NotifyContext(context.Background(), os.Interrupt)

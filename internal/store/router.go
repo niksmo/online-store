@@ -16,7 +16,8 @@ func SetupAPIRouter(stopCtx context.Context, app *fiber.App) {
 
 	storeService := NewService()
 	storeHandler := NewHandler(storeService)
-	go storeService.MessageStream(stopCtx)
+	storeProducer := NewProducer(stopCtx, "127.0.0.1:19094,127.0.0.1:29094", "orders_create")
+	go storeService.CreatedOrdersStream(stopCtx, storeProducer)
 
 	router.Post("/", storeHandler.PostOrder)
 }

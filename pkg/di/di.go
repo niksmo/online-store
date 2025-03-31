@@ -12,3 +12,9 @@ type ProductGetter interface {
 type OrderCreater interface {
 	CreateOrder(ctx context.Context, order scheme.Order)
 }
+
+// return result if error is nil
+type OrderProducer interface {
+	Produce(ctx context.Context, order scheme.Order) (string, error)
+	Close()
+}
