@@ -72,6 +72,7 @@ func (p OrdersCreateProducer) createMessage(
 		logger.Instance.Error().Caller().Err(err).Send()
 		return nil, err
 	}
+	logger.Instance.Info().RawJSON("msgPayload", value).Msg("payload to kafka")
 
 	partition := kafka.TopicPartition{
 		Topic: &p.topic, Partition: kafka.PartitionAny,
