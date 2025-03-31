@@ -14,7 +14,10 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
-const deliveryMsgWaitTimeout = 3 * time.Second
+const (
+	deliveryMsgWaitTimeout = 3 * time.Second
+	deliveryRetries        = 3
+)
 
 var ErrNotKafkaMsg = errors.New("event is not kafka message")
 
@@ -27,7 +30,10 @@ func NewProducer(
 	ctx context.Context, bootstrapServers string, topic string,
 ) OrdersCreateProducer {
 	kConfig := &kafka.ConfigMap{
-		"bootstrap.servers": bootstrapServers,
+		"bootstrap.servers":  bootstrapServers,
+		"retries":            deliveryRetries,
+		"acks":               "all",
+		"enable.idempotence": true,
 	}
 	producer, err := kafka.NewProducer(
 		logkafka.Config(ctx, kConfig, 6, &logger.Instance),
