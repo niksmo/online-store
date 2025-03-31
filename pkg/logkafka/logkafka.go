@@ -20,9 +20,11 @@ func Config(
 	}
 	logEventStream := make(chan kafka.LogEvent)
 	go handleKafkaLogEvent(ctx, logEventStream, logger)
+
 	(*kConfig)["log_level"] = level
 	(*kConfig)["go.logs.channel.enable"] = true
 	(*kConfig)["go.logs.channel"] = logEventStream
+
 	return kConfig
 }
 

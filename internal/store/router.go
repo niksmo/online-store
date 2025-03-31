@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupAPIRouter(stopCtx context.Context, app *fiber.App) {
+func SetupAPIRouter(stopCtx context.Context, app *fiber.App, kafkaServers, kafkaTopic string) {
 
 	router := app.Use(fiberzerolog.New(fiberzerolog.Config{
 		Logger: &logger.Instance,
@@ -16,7 +16,7 @@ func SetupAPIRouter(stopCtx context.Context, app *fiber.App) {
 
 	storeService := NewService()
 	storeHandler := NewHandler(storeService)
-	storeProducer := NewProducer(stopCtx, "127.0.0.1:19094,127.0.0.1:29094", "orders_create")
+	storeProducer := NewProducer(stopCtx, kafkaServers, kafkaTopic)
 	go storeService.CreatedOrdersStream(stopCtx, storeProducer)
 
 	router.Post("/", storeHandler.PostOrder)

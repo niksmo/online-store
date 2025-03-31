@@ -8,22 +8,20 @@ import (
 
 const shutdownTimeout = 5 * time.Second
 
-func Bootstrap(app *fiber.App, addr string) <-chan error {
-	errCh := make(chan error)
-
-	go func(app *fiber.App, addr string) {
-		defer close(errCh)
-
-		err := app.Listen(addr)
-		if err != nil {
-			errCh <- err
-			return
-		}
-	}(app, addr)
-
-	return errCh
+type HTTPServer struct {
+	addr     string
+	FiberApp *fiber.App
 }
 
-func Close(app *fiber.App) error {
-	return app.ShutdownWithTimeout(shutdownTimeout)
+func New(addr string) HTTPServer {
+	return HTTPServer{addr: addr, FiberApp: fiber.New()}
+}
+
+func (s HTTPServer) Listen(errCb func(err error)) {
+	err := s.FiberApp.Listen(s.addr)
+	errCb(err)
+}
+
+func (s HTTPServer) Close() error {
+	return s.FiberApp.ShutdownWithTimeout(shutdownTimeout)
 }

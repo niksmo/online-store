@@ -7,13 +7,7 @@ import (
 	"niksmo/online-store/pkg/logger"
 	"os"
 	"os/signal"
-
-	"github.com/gofiber/fiber/v2"
 )
-
-// flags
-// bootstrapServers
-// topic
 
 func main() {
 	stopCtx, stopFn := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -22,22 +16,20 @@ func main() {
 	FlagsInit()
 	logger.Init()
 
-	app := fiber.New()
-	store.SetupAPIRouter(stopCtx, app)
+	server := httpserver.New(AddrFlagValue)
 
-	serverErrCh := httpserver.Bootstrap(app, AddrFlagValue)
-	go handleListenErr(serverErrCh)
+	store.SetupAPIRouter(
+		stopCtx, server.FiberApp, KafkaServersFlagValue, KafkaTopicFlagValue,
+	)
+
+	go server.Listen(func(serverErr error) {
+		logger.Instance.Error().Caller().Err(serverErr).Msg("server listen")
+	})
 
 	<-stopCtx.Done()
 	logger.Instance.Info().Msg("gracefully shutdown")
 
-	if err := httpserver.Close(app); err != nil {
+	if err := server.Close(); err != nil {
 		logger.Instance.Error().Caller().Err(err).Msg("server shutdown")
-	}
-}
-
-func handleListenErr(errStream <-chan error) {
-	if err := <-errStream; err != nil {
-		logger.Instance.Error().Caller().Err(err).Msg("server listen")
 	}
 }
