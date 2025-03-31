@@ -12,7 +12,7 @@ const (
 
 	addrEnv      = "SERVER_ADDRESS"
 	addrFlagName = "address"
-	addrDefault  = "http://127.0.0.1:8080/"
+	addrDefault  = "http://127.0.0.1:8000/"
 )
 
 var (
