@@ -6,10 +6,6 @@ import (
 )
 
 const (
-	addrEnv      = "SERVER_ADDRESS"
-	addrFlagName = "address"
-	addrDefault  = "127.0.0.1:8000"
-
 	kafkaServersEnv      = "KAFKA_SERVERS"
 	kafkaServersFlagName = "kafka-servers"
 	kafkaServersDefault  = "127.0.0.1:19094,127.0.0.1:29094"
@@ -17,12 +13,16 @@ const (
 	kafkaTopicEnv      = "KAFKA_TOPIC"
 	kafkaTopicFlagName = "kafka-topic"
 	kafkaTopicDefault  = "orders_create"
+
+	kafkaConsumerGroupEnv      = "KAFKA_CONSUMER_GROUP"
+	kafkaConsumerGroupFlagName = "kafka-consumer-group"
+	kafkaConsumerGroupDefault  = "0"
 )
 
 var (
-	AddrFlagValue         string
-	KafkaServersFlagValue string
-	KafkaTopicFlagValue   string
+	KafkaServersFlagValue       string
+	KafkaTopicFlagValue         string
+	KafkaConsumerGroupFlagValue string
 )
 
 func FlagsInit() {
@@ -32,35 +32,41 @@ func FlagsInit() {
 }
 
 func bindEnv() {
-	viper.BindEnv(addrEnv)
 	viper.BindEnv(kafkaServersEnv)
 	viper.BindEnv(kafkaTopicEnv)
+	viper.BindEnv(kafkaConsumerGroupEnv)
 }
 
 func bindFlags() {
-	pflag.StringP(addrFlagName, "a", addrDefault, "server address")
-
 	pflag.StringP(
-		kafkaServersFlagName, "b", kafkaServersDefault, "kafka bootstrap servers",
+		kafkaServersFlagName,
+		"b",
+		kafkaServersDefault,
+		"kafka bootstrap servers",
 	)
 
-	pflag.StringP(kafkaTopicFlagName, "t", kafkaTopicDefault, "kafka topic")
+	pflag.StringP(
+		kafkaTopicFlagName,
+		"t",
+		kafkaTopicDefault,
+		"kafka topic",
+	)
+
+	pflag.StringP(
+		kafkaConsumerGroupFlagName,
+		"g",
+		kafkaConsumerGroupDefault,
+		"kafka consumer group",
+	)
+
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 }
 
 func setFlags() {
-	setAddrFlag()
 	setKafkaServersFlag()
 	setKafkaTopicFlag()
-}
-
-func setAddrFlag() {
-	if envValue := viper.GetString(addrEnv); envValue != "" {
-		AddrFlagValue = envValue
-		return
-	}
-	AddrFlagValue = viper.GetString(addrFlagName)
+	setKafkaConsumerGroupFlag()
 }
 
 func setKafkaServersFlag() {
@@ -77,4 +83,12 @@ func setKafkaTopicFlag() {
 		return
 	}
 	KafkaTopicFlagValue = viper.GetString(kafkaTopicFlagName)
+}
+
+func setKafkaConsumerGroupFlag() {
+	if envValue := viper.GetString(kafkaConsumerGroupEnv); envValue != "" {
+		KafkaConsumerGroupFlagValue = envValue
+		return
+	}
+	KafkaConsumerGroupFlagValue = viper.GetString(kafkaConsumerGroupFlagName)
 }

@@ -17,6 +17,7 @@ import (
 const (
 	deliveryMsgWaitTimeout = 3 * time.Second
 	deliveryRetries        = 3
+	logKafkaLevel          = 6
 )
 
 var ErrNotKafkaMsg = errors.New("event is not kafka message")
@@ -35,11 +36,15 @@ func NewProducer(
 		"acks":               "all",
 		"enable.idempotence": true,
 	}
+
 	producer, err := kafka.NewProducer(
-		logkafka.Config(ctx, kConfig, 6, &logger.Instance),
+		logkafka.Config(ctx, kConfig, logKafkaLevel, &logger.Instance),
 	)
 	if err != nil {
-		logger.Instance.Fatal().Err(err).Msg("invalid producer config")
+		logger.Instance.Fatal().
+			Err(err).
+			Caller().
+			Msg("invalid producer config")
 	}
 	return OrdersCreateProducer{kafkaP: producer, topic: topic}
 }

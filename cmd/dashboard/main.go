@@ -11,6 +11,7 @@ func main() {
 	stopCtx, stopFn := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stopFn()
 
+	FlagsInit()
 	logger.Init()
 
 	<-stopCtx.Done()
