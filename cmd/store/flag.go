@@ -8,7 +8,7 @@ import (
 const (
 	addrEnv      = "SERVER_ADDRESS"
 	addrFlagName = "address"
-	addrDefault  = "127.0.0.1:8000"
+	addrDefault  = ":8000"
 
 	kafkaServersEnv      = "KAFKA_SERVERS"
 	kafkaServersFlagName = "kafka-servers"

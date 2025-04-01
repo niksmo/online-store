@@ -10,8 +10,8 @@ const (
 	workersFlagName = "workers"
 	workersDefault  = 1
 
-	addrEnv      = "SERVER_ADDRESS"
-	addrFlagName = "address"
+	addrEnv      = "URL_ADDRESS"
+	addrFlagName = "url"
 	addrDefault  = "http://127.0.0.1:8000/"
 )
 
@@ -33,7 +33,7 @@ func bindEnv() {
 
 func bindFlags() {
 	pflag.IntP(workersFlagName, "w", workersDefault, "number of order senders")
-	pflag.StringP(addrFlagName, "a", addrDefault, "server address")
+	pflag.StringP(addrFlagName, "a", addrDefault, "server URL address")
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 }

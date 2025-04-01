@@ -6,16 +6,24 @@ volumes:
 
 
 networks:
-  kafka:
+  store-net:
+  kafka-net:
 
 
 services:
+  kafka-init-topics:
+    image: bitnami/kafka:4.0.0
+    container_name: kafka-init-topics
+    depends_on:
+      - kafka-1
+    command: "kafka-topics.sh --bootstrap-server kafka-1:9092 --create --if-not-exists --topic orders_create --partitions 3 --replication-factor 2"
+    networks:
+      - kafka-net
+
   kafka-1:
     image: bitnami/kafka:4.0.0
     container_name: kafka-1
     hostname: kafka-1
-    ports:
-      - "127.0.0.1:19094:9094"
     volumes:
       - kafka-1-data:/bitnami/kafka
     environment:
@@ -27,16 +35,19 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=BROKER
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093,2@kafka-2:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,CLIENT:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka-1:9092,CLIENT://127.0.0.1:19094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka-1:9092,CLIENT://kafka-1:9094
     networks:
-      - kafka
+      - kafka-net
+    healthcheck:
+      test: kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 60
 
   kafka-2:
     image: bitnami/kafka:4.0.0
     container_name: kafka-2
     hostname: kafka-2
-    ports:
-      - "127.0.0.1:29094:9094"
     volumes:
       - kafka-2-data:/bitnami/kafka
     environment:
@@ -48,9 +59,14 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=BROKER
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093,2@kafka-2:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,CLIENT:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka-2:9092,CLIENT://127.0.0.1:29094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka-2:9092,CLIENT://kafka-2:9094
     networks:
-      - kafka
+      - kafka-net
+    healthcheck:
+      test: kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 60
 
   ui:
     image: provectuslabs/kafka-ui:v0.7.2
@@ -62,4 +78,73 @@ services:
       - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka-1:9092,kafka-2:9092
       - KAFKA_CLUSTERS_0_NAME=kraft_cluster_0
     networks:
-      - kafka
+      - kafka-net
+
+  order-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.generator
+    container_name: order-generator
+    environment:
+      - N_WORKERS=10
+      - URL_ADDRESS=http://store:8000/
+    depends_on:
+      - store
+    networks:
+      - store-net
+
+  store:
+    build:
+      context: .
+      dockerfile: Dockerfile.store
+    container_name: store
+    environment:
+      - SERVER_ADDRESS=:8000
+      - KAFKA_SERVERS=kafka-1:9094,kafka-2:9094
+      - KAFKA_TOPIC=orders_create
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+    networks:
+      - store-net
+      - kafka-net
+
+  loyalty:
+    build:
+      context: .
+      dockerfile: Dockerfile.loyalty
+    deploy:
+      mode: replicated
+      replicas: 2
+    environment:
+      - KAFKA_SERVERS=kafka-1:9094,kafka-2:9094
+      - KAFKA_TOPIC=orders_create
+      - KAFKA_CONSUMER_GROUP=0
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+    networks:
+      - kafka-net
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    deploy:
+      mode: replicated
+      replicas: 2
+    environment:
+      - KAFKA_SERVERS=kafka-1:9094,kafka-2:9094
+      - KAFKA_TOPIC=orders_create
+      - KAFKA_CONSUMER_GROUP=1
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+    networks:
+      - kafka-net
