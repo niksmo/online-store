@@ -2,14 +2,15 @@ package loyalty
 
 import (
 	"context"
+	"niksmo/online-store/pkg/di"
 	"niksmo/online-store/pkg/logger"
 )
 
 type LoyaltyService struct {
-	consumer SingleMessageConsumer
+	consumer di.Consumer
 }
 
-func NewService(consumer SingleMessageConsumer) LoyaltyService {
+func NewService(consumer di.Consumer) LoyaltyService {
 	return LoyaltyService{consumer: consumer}
 }
 
@@ -21,5 +22,5 @@ func (s LoyaltyService) Run(ctx context.Context) {
 
 func (s LoyaltyService) Close() error {
 	logger.Instance.Info().Msg("close loyalty service")
-	return s.consumer.kafkaC.Close()
+	return s.consumer.Close()
 }

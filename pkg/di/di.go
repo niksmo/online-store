@@ -18,3 +18,8 @@ type OrderProducer interface {
 	Produce(ctx context.Context, order scheme.Order) (string, error)
 	Close()
 }
+
+type Consumer interface {
+	Run(ctx context.Context)
+	Close() error
+}

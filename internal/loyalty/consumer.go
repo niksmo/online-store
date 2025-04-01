@@ -46,6 +46,10 @@ func NewSingleMessageConsumer(
 	return SingleMessageConsumer{kafkaC: consumer, topic: topic}
 }
 
+func (c SingleMessageConsumer) Close() error {
+	return c.kafkaC.Close()
+}
+
 func (c SingleMessageConsumer) Run(ctx context.Context) {
 	err := c.kafkaC.Subscribe(c.topic, nil)
 	if err != nil {

@@ -50,6 +50,10 @@ func NewSingleMessageConsumer(
 	return BatchMessageConsumer{kafkaC: consumer, topic: topic}
 }
 
+func (c BatchMessageConsumer) Close() error {
+	return c.kafkaC.Close()
+}
+
 func (c BatchMessageConsumer) Run(ctx context.Context) {
 	err := c.kafkaC.Subscribe(c.topic, nil)
 	if err != nil {

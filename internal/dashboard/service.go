@@ -2,14 +2,15 @@ package dashboard
 
 import (
 	"context"
+	"niksmo/online-store/pkg/di"
 	"niksmo/online-store/pkg/logger"
 )
 
 type DashboardService struct {
-	consumer BatchMessageConsumer
+	consumer di.Consumer
 }
 
-func NewService(consumer BatchMessageConsumer) DashboardService {
+func NewService(consumer di.Consumer) DashboardService {
 	return DashboardService{consumer: consumer}
 }
 
@@ -21,5 +22,5 @@ func (s DashboardService) Run(ctx context.Context) {
 
 func (s DashboardService) Close() error {
 	logger.Instance.Info().Msg("close dashboard service")
-	return s.consumer.kafkaC.Close()
+	return s.consumer.Close()
 }
