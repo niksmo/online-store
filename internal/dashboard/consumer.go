@@ -3,7 +3,6 @@ package dashboard
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"niksmo/online-store/pkg/logger"
 	"niksmo/online-store/pkg/logkafka"
 	"niksmo/online-store/pkg/scheme"
@@ -85,9 +84,7 @@ func (c BatchMessageConsumer) handleEvent(event kafka.Event) {
 	case kafka.OffsetsCommitted:
 		logger.Instance.Info().Msg("offset committed")
 	default:
-		logger.Instance.Info().
-			Str("event", fmt.Sprintf("%#v", ev)).
-			Msg("kafka event ignored")
+		logger.Instance.Info().Msg("kafka event ignored")
 	}
 }
 
