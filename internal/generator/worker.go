@@ -23,7 +23,12 @@ func OrderSendersPool(
 	}
 }
 
-func sendOrderWorker(ctx context.Context, workerID int, orderStream <-chan scheme.Order, URL string) {
+func sendOrderWorker(
+	ctx context.Context,
+	workerID int,
+	orderStream <-chan scheme.Order,
+	URL string,
+) {
 	for {
 		select {
 		case <-ctx.Done():
