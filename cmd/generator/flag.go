@@ -8,11 +8,11 @@ import (
 const (
 	workersEnv      = "N_WORKERS"
 	workersFlagName = "workers"
-	workersDefault  = 1
+	workersDefault  = 8
 
 	addrEnv      = "URL_ADDRESS"
 	addrFlagName = "url"
-	addrDefault  = "http://127.0.0.1:8000/"
+	addrDefault  = "http://store:8000/"
 )
 
 var (

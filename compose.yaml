@@ -80,13 +80,13 @@ services:
     networks:
       - kafka-net
 
-  order-generator:
+  generator:
     build:
       context: .
       dockerfile: Dockerfile.generator
-    container_name: order-generator
+    container_name: generator
     environment:
-      - N_WORKERS=10
+      - N_WORKERS=8
       - URL_ADDRESS=http://store:8000/
     depends_on:
       - store

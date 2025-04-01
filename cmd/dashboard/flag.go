@@ -8,7 +8,7 @@ import (
 const (
 	kafkaServersEnv      = "KAFKA_SERVERS"
 	kafkaServersFlagName = "kafka-servers"
-	kafkaServersDefault  = "127.0.0.1:19094,127.0.0.1:29094"
+	kafkaServersDefault  = "kafka-1:9094,kafka-2:9094"
 
 	kafkaTopicEnv      = "KAFKA_TOPIC"
 	kafkaTopicFlagName = "kafka-topic"

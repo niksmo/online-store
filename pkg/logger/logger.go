@@ -12,5 +12,5 @@ func Init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMicro
 	zerolog.MessageFieldName = "msg"
-	Instance = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	Instance = zerolog.New(os.Stderr).With().Timestamp().Logger()
 }
