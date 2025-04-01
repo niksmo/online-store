@@ -13,11 +13,16 @@ const (
 	kafkaTopicEnv      = "KAFKA_TOPIC"
 	kafkaTopicFlagName = "kafka-topic"
 	kafkaTopicDefault  = "orders_create"
+
+	kafkaConsumerGroupEnv      = "KAFKA_CONSUMER_GROUP"
+	kafkaConsumerGroupFlagName = "kafka-consumer-group"
+	kafkaConsumerGroupDefault  = "1"
 )
 
 var (
-	KafkaServersFlagValue string
-	KafkaTopicFlagValue   string
+	KafkaServersFlagValue       string
+	KafkaTopicFlagValue         string
+	KafkaConsumerGroupFlagValue string
 )
 
 func FlagsInit() {
@@ -29,11 +34,31 @@ func FlagsInit() {
 func bindEnv() {
 	viper.BindEnv(kafkaServersEnv)
 	viper.BindEnv(kafkaTopicEnv)
+	viper.BindEnv(kafkaConsumerGroupEnv)
 }
 
 func bindFlags() {
-	pflag.StringP(kafkaServersFlagName, "b", kafkaServersDefault, "kafka bootstrap servers")
-	pflag.StringP(kafkaTopicFlagName, "t", kafkaTopicDefault, "kafka topic")
+	pflag.StringP(
+		kafkaServersFlagName,
+		"b",
+		kafkaServersDefault,
+		"kafka bootstrap servers",
+	)
+
+	pflag.StringP(
+		kafkaTopicFlagName,
+		"t",
+		kafkaTopicDefault,
+		"kafka topic",
+	)
+
+	pflag.StringP(
+		kafkaConsumerGroupFlagName,
+		"g",
+		kafkaConsumerGroupDefault,
+		"kafka consumer group",
+	)
+
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 }
@@ -41,6 +66,7 @@ func bindFlags() {
 func setFlags() {
 	setKafkaServersFlag()
 	setKafkaTopicFlag()
+	setKafkaConsumerGroupFlag()
 }
 
 func setKafkaServersFlag() {
@@ -57,4 +83,12 @@ func setKafkaTopicFlag() {
 		return
 	}
 	KafkaTopicFlagValue = viper.GetString(kafkaTopicFlagName)
+}
+
+func setKafkaConsumerGroupFlag() {
+	if envValue := viper.GetString(kafkaConsumerGroupEnv); envValue != "" {
+		KafkaConsumerGroupFlagValue = envValue
+		return
+	}
+	KafkaConsumerGroupFlagValue = viper.GetString(kafkaConsumerGroupFlagName)
 }
