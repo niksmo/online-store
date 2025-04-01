@@ -23,7 +23,9 @@ func main() {
 	)
 
 	go server.Listen(func(serverErr error) {
-		logger.Instance.Error().Caller().Err(serverErr).Msg("server listen")
+		if serverErr != nil {
+			logger.Instance.Error().Caller().Err(serverErr).Msg("server listen")
+		}
 	})
 
 	<-stopCtx.Done()
