@@ -40,8 +40,8 @@ docker compose up -d
 
 ### Сервис Generator
 Генерирует заказы соответствующие схеме:
-```typescript
-interface Scheme.Order {
+```
+Order {
     userID: number,
     orderID: number,
     items: Product[],
@@ -49,7 +49,7 @@ interface Scheme.Order {
     date: string
 }
 
-interface Scheme.Product {
+Product {
     id: number,
     name: string,
     price: number
@@ -59,7 +59,7 @@ interface Scheme.Product {
 
 Переменные окружения сервиса:
 
-- `N_WORKERS` - Количество одновременно работающих воркеров отправки заказов, по умолчанию **8**
+- `N_WORKERS` - Количество одновременно работающих воркеров отправки заказов, по умолчанию `8`
 - `URL_ADDRESS` - URL эндроинта сервиса ***Store***, по умолчанию `http://store:8000/`
 
 
